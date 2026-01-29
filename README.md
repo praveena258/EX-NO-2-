@@ -25,19 +25,66 @@ To encrypt a message, one would break the message into digrams (groups of 2 lett
 
 ## ALGORITHM:
 
-STEP-1: Read the plain text from the user.
-STEP-2: Read the keyword from the user.
-STEP-3: Arrange the keyword without duplicates in a 5*5 matrix in the row order and fill the remaining cells with missed out letters in alphabetical order. Note that ‘i’ and ‘j’ takes the same cell.
-STEP-4: Group the plain text in pairs and match the corresponding corner letters by forming a rectangular grid.
-STEP-5: Display the obtained cipher text.
+1. Read the plain text from the user.
+2.  Read the keyword from the user.
+3.  Arrange the keyword without duplicates in a 5*5 matrix in the row order and fill the remaining cells with missed out letters in alphabetical order. Note that ‘i’ and ‘j’ takes the same cell.
+4.  Group the plain text in pairs and match the corresponding corner letters by forming a rectangular grid.
+5.  Display the obtained cipher text.
 
 
 
 
 Program:
 
+```
+#include <stdio.h>
+#include <stdlib.h>
+void caesarEncrypt(char *text, int key) 
+{ 
+    for (int i = 0; text[i] != '\0'; i++){
+    char c = text[i]; 
+if (c >= 'A' && c <= 'Z')
+{ 
+    text[i] = ((c - 'A' + key) % 26 + 26) % 26 + 'A'; 
+    
+} 
+else if (c >= 'a' && c <= 'z') 
+{ 
+    text[i] = ((c - 'a' + key) % 26 + 26) % 26 + 'a'; 
+    }
+}
+}
+
+void caesarDecrypt(char *text, int key) { 
+caesarEncrypt(text, -key); 
+    
+}
+
+int main() {
+    char message[100]; 
+int key;
+
+printf("Enter the message to encrypt: "); 
+fgets(message, sizeof(message), stdin); 
+printf("Enter the Caesar Cipher key (an integer): "); 
+scanf("%d", &key); 
+caesarEncrypt(message, key); 
+printf("Encrypted Message: %s", message); 
+
+caesarDecrypt(message, key); 
+printf("Decrypted Message: %s", message); 
+return 0; 
+   
+}
+```
+
 
 
 
 
 Output:
+<img width="533" height="321" alt="image" src="https://github.com/user-attachments/assets/f366b02e-42aa-477d-a308-d5d11c57ec38" />
+<img width="1259" height="794" alt="image" src="https://github.com/user-attachments/assets/3f7b04f4-51a7-4315-88ed-6d4a227fb77b" />
+
+
+
