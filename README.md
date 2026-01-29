@@ -83,7 +83,9 @@ return 0;
 
 
 Output:
+
 <img width="533" height="321" alt="image" src="https://github.com/user-attachments/assets/f366b02e-42aa-477d-a308-d5d11c57ec38" />
+
 <img width="1259" height="794" alt="image" src="https://github.com/user-attachments/assets/3f7b04f4-51a7-4315-88ed-6d4a227fb77b" />
 
 
