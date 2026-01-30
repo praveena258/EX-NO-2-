@@ -39,43 +39,125 @@ Program:
 ```
 #include <stdio.h>
 #include <stdlib.h>
-void caesarEncrypt(char *text, int key) 
-{ 
-    for (int i = 0; text[i] != '\0'; i++){
-    char c = text[i]; 
-if (c >= 'A' && c <= 'Z')
-{ 
-    text[i] = ((c - 'A' + key) % 26 + 26) % 26 + 'A'; 
-    
-} 
-else if (c >= 'a' && c <= 'z') 
-{ 
-    text[i] = ((c - 'a' + key) % 26 + 26) % 26 + 'a'; 
+#include <string.h>
+
+#define SIZE 30
+
+void toLowerCase(char plain[], int ps) {
+    for (int i = 0; i < ps; i++) {
+        if (plain[i] >= 'A' && plain[i] <= 'Z')
+            plain[i] += 32;
     }
 }
+
+int removeSpaces(char* plain, int ps) {
+    int count = 0;
+    for (int i = 0; i < ps; i++)
+        if (plain[i] != ' ')
+            plain[count++] = plain[i];
+    plain[count] = '\0';
+    return count;
 }
 
-void caesarDecrypt(char *text, int key) { 
-caesarEncrypt(text, -key); 
-    
+void generateKeyTable(char key[], int ks, char keyT[5][5]) {
+    int *dicty = calloc(26, sizeof(int));
+
+    for (int i = 0; i < ks; i++)
+        if (key[i] != 'j')
+            dicty[key[i] - 'a'] = 2;
+
+    dicty['j' - 'a'] = 1;
+
+    int i = 0, j = 0;
+    for (int k = 0; k < ks; k++) {
+        if (dicty[key[k] - 'a'] == 2) {
+            dicty[key[k] - 'a']--;
+            keyT[i][j++] = key[k];
+            if (j == 5) { i++; j = 0; }
+        }
+    }
+
+    for (int k = 0; k < 26; k++) {
+        if (dicty[k] == 0) {
+            keyT[i][j++] = k + 'a';
+            if (j == 5) { i++; j = 0; }
+        }
+    }
+    free(dicty);
+}
+
+void search(char keyT[5][5], char a, char b, int arr[]) {
+    if (a == 'j') a = 'i';
+    if (b == 'j') b = 'i';
+
+    for (int i = 0; i < 5; i++)
+        for (int j = 0; j < 5; j++) {
+            if (keyT[i][j] == a) { arr[0] = i; arr[1] = j; }
+            if (keyT[i][j] == b) { arr[2] = i; arr[3] = j; }
+        }
+}
+
+int mod5(int a) { return a % 5; }
+
+int prepare(char str[], int ps) {
+    if (ps % 2 != 0) {
+        str[ps++] = 'z';
+        str[ps] = '\0';
+    }
+    return ps;
+}
+
+void encrypt(char str[], char keyT[5][5], int ps) {
+    int a[4];
+
+    for (int i = 0; i < ps; i += 2) {
+        search(keyT, str[i], str[i + 1], a);
+
+        if (a[0] == a[2]) {
+            str[i]     = keyT[a[0]][mod5(a[1] + 1)];
+            str[i + 1] = keyT[a[0]][mod5(a[3] + 1)];
+        }
+        else if (a[1] == a[3]) {
+            str[i]     = keyT[mod5(a[0] + 1)][a[1]];
+            str[i + 1] = keyT[mod5(a[2] + 1)][a[1]];
+        }
+        else {
+            str[i]     = keyT[a[0]][a[3]];
+            str[i + 1] = keyT[a[2]][a[1]];
+        }
+    }
+}
+
+void encryptByPlayfairCipher(char str[], char key[]) {
+    int ps, ks;
+    char keyT[5][5];
+
+    ks = strlen(key);
+    ks = removeSpaces(key, ks);
+    toLowerCase(key, ks);
+
+    ps = strlen(str);
+    toLowerCase(str, ps);
+    ps = removeSpaces(str, ps);
+    ps = prepare(str, ps);
+
+    generateKeyTable(key, ks, keyT);
+    encrypt(str, keyT, ps);
 }
 
 int main() {
-    char message[100]; 
-int key;
+    char str[SIZE] = "instruments";
+    char key[SIZE] = "monarchy";
 
-printf("Enter the message to encrypt: "); 
-fgets(message, sizeof(message), stdin); 
-printf("Enter the Caesar Cipher key (an integer): "); 
-scanf("%d", &key); 
-caesarEncrypt(message, key); 
-printf("Encrypted Message: %s", message); 
+    printf("Key text: %s\n", key);
+    printf("Plain text: %s\n", str);
 
-caesarDecrypt(message, key); 
-printf("Decrypted Message: %s", message); 
-return 0; 
-   
+    encryptByPlayfairCipher(str, key);
+
+    printf("Cipher text: %s\n", str);
+    return 0;
 }
+
 ```
 
 
@@ -84,9 +166,8 @@ return 0;
 
 Output:
 
-<img width="533" height="321" alt="image" src="https://github.com/user-attachments/assets/f366b02e-42aa-477d-a308-d5d11c57ec38" />
+<img width="1906" height="920" alt="image" src="https://github.com/user-attachments/assets/8f14a8f6-3ba0-4980-95b4-0f2acbc3c3ee" />
 
-<img width="1259" height="794" alt="image" src="https://github.com/user-attachments/assets/3f7b04f4-51a7-4315-88ed-6d4a227fb77b" />
 
 
 
